@@ -22,6 +22,7 @@ dataset['sex'] = dataset['sex'].map({'Male': 1, 'Female': 0})
 dataset['relationship'] = dataset['relationship'].map({'Wife':0, 'Own-child':1, 'Husband':2, 'Not-in-family':3, 'Other-relative':4, 'Unmarried':5})
 dataset['race'] = dataset['race'].map({'White':0, 'Asian-Pac-Islander':1, 'Amer-Indian-Eskimo':2, 'Other':3, 'Black':4})
 dataset['native-country'] = dataset['native-country'].map({'United-States':0,'Cuba':1,'Jamaica':2,'India':3,'?':4,'Mexico':5,'South':6,'Honduras':7,'Mexico':8,'Puerto-Rico':9,'England':10,'Germany':11,'Iran':12,'Philippines':13,'Italy':14,'Poland':15,'Columbia':16,'Cambodia':17,'Thailand':18,'Canada':19,'Ecuador':20,'Laos':21,'Taiwan':22,'Haiti':23,'Portugal':24,'Dominican-Republic':25,'Philippines':26,'El-Salvador':27,'Poland':28,'France':29,'Honduras':30,'Haiti':31,'Guatemala':32,'China':33,'Japan':34,'Yugoslavia':35,'Peru':36,'Scotland':37,'Haiti':38,'Trinadad&Tobago':39,'Greece':40,'Nicaragua':41,'Vietnam':42,'Nicaragua':43,'Hong':44,'Outlying-US(Guam-USVI-etc)':45,'Ireland':46,'Hungary':47,'Cambodia':48})
+dataset.dropna(inplace=True)
 X_train = dataset.iloc[1:, 0:13].values
 y_train = dataset.iloc[1:, 14].values
 y_train = keras.utils.to_categorical(y_train, num_classes = 2)
@@ -35,18 +36,20 @@ datasett['sex'] = datasett['sex'].map({'Male': 1, 'Female': 0})
 datasett['relationship'] = datasett['relationship'].map({'Wife':0, 'Own-child':1, 'Husband':2, 'Not-in-family':3, 'Other-relative':4, 'Unmarried':5})
 datasett['race'] = datasett['race'].map({'White':0, 'Asian-Pac-Islander':1, 'Amer-Indian-Eskimo':2, 'Other':3, 'Black':4})
 datasett['native-country'] = datasett['native-country'].map({'United-States':0,'Cuba':1,'Jamaica':2,'India':3,'?':4,'Mexico':5,'South':6,'Honduras':7,'Mexico':8,'Puerto-Rico':9,'England':10,'Germany':11,'Iran':12,'Philippines':13,'Italy':14,'Poland':15,'Columbia':16,'Cambodia':17,'Thailand':18,'Canada':19,'Ecuador':20,'Laos':21,'Taiwan':22,'Haiti':23,'Portugal':24,'Dominican-Republic':25,'Philippines':26,'El-Salvador':27,'Poland':28,'France':29,'Honduras':30,'Haiti':31,'Guatemala':32,'China':33,'Japan':34,'Yugoslavia':35,'Peru':36,'Scotland':37,'Haiti':38,'Trinadad&Tobago':39,'Greece':40,'Nicaragua':41,'Vietnam':42,'Nicaragua':43,'Hong':44,'Outlying-US(Guam-USVI-etc)':45,'Ireland':46,'Hungary':47,'Cambodia':48})
+datasett.dropna(inplace=True)
 X_test = datasett.iloc[1:, 0:13].values
 y_test = datasett.iloc[1:, 14].values
 y_test = keras.utils.to_categorical(y_test, num_classes = 2)
-
+if(dataset.isnull().values.any() or datasett.isnull().values.any()):
+   print("Yahoo",dataset.isnull().sum().sum(),datasett.isnull().sum().sum())
 model = keras.Sequential()
 dim = X_train.shape[1]#Layer 1
 model.add(layers.Dense(32, input_dim = dim))
 model.add(layers.LeakyReLU())
-model.add(layers.Dropout(0.25))#Layer 2
+model.add(layers.Dropout(0.15))#Layer 2
 model.add(layers.Dense(32))
 model.add(layers.LeakyReLU())
-model.add(layers.Dropout(0.25))#output layer
+model.add(layers.Dropout(0.15))#output layer
 model.add(layers.Dense(2))
 model.add(layers.Activation('sigmoid'))
 opt = keras.optimizers.SGD(learning_rate=0.01, momentum=0.9)
@@ -56,6 +59,14 @@ bsize = 200
 model.fit(X_train, y_train, batch_size = bsize, epochs = 20, verbose = 0)
 lss,acc = model.evaluate(X_test, y_test,verbose=0)
 print('Test Accuracy: %.3f' % acc)
+row = [45,0,281539,1,10,0,8,0,3,0,0,40,3]
+yhat = model.predict([row])
+print(yhat)
+if(yhat[0][0] == 1.):
+    print("Salary is likely to be above 50,000 per year")
+else:
+    print("Salary is likely to be less than or equal to 50,000 per year")
+
 
 
 
